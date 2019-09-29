@@ -1,7 +1,10 @@
 import os
 from flask import Flask, render_template, url_for
+from forms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = '7e158f52147dd91eb8853151dea4da9a'
 
 categories = [
     'Soccer', 'BasketBall', 'BaseBall', 'Frisbee', 'Snowboarding'
@@ -11,7 +14,9 @@ categories = [
 @app.route('/')
 @app.route('/login')
 def user_login():
-    return render_template('index.html', categories=categories)
+    form1 = RegistrationForm()
+    form2 = LoginForm()
+    return render_template('index.html', categories=categories,form =form1,form2)
 
 
 if __name__ == "__main__":
