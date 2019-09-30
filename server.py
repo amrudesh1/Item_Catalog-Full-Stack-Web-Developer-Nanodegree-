@@ -16,7 +16,7 @@ categories = [
 def user_login():
     form1 = RegistrationForm()
     form2 = LoginForm()
-    return render_template('index.html', categories=categories,form =form1,form2)
+    return render_template('index.html', categories=categories)
 
 
 if __name__ == "__main__":
