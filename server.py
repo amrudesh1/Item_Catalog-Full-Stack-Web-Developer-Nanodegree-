@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, flash, redirect
 from forms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
@@ -12,11 +12,19 @@ categories = [
 
 
 @app.route('/')
-@app.route('/login')
+@app.route('/login' ,methods=['GET', 'POST']) 
 def user_login():
-    form1 = RegistrationForm()
-    form2 = LoginForm()
-    return render_template('index.html', categories=categories)
+    form = LoginForm()
+    return render_template('index.html', title='Login', form=form)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def user_registration():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        flash(f'Account Created for {form.name.data}!', '_success_')
+        return redirect(url_for('user_login'))
+    return render_template('register.html', titile='Registration', form=form)
 
 
 if __name__ == "__main__":
