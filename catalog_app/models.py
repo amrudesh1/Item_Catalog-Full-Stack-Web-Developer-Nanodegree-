@@ -3,8 +3,8 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-from flask_login import LoginManager, UserMixin
-
+from catalog_app import login_manager
+from flask_login import UserMixin
 
 
 engine = create_engine('sqlite:///categories.db', echo=True)
@@ -12,10 +12,9 @@ Base = declarative_base(bind=engine)
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-login_manager = LoginManager()
 
 @login_manager.user_loader
-def get_user(self, user_id):
+def get_user(user_id):
     return session.query(User).get(int(user_id))
 
 
