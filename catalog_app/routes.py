@@ -1,13 +1,9 @@
 import os
-from flask import Flask, render_template, url_for, flash, redirect
-from forms import RegistrationForm, LoginForm
-from models import User, Categories, Items, session
-from flask_bcrypt import Bcrypt
+from catalog_app import app, bcrypt
+from catalog_app.forms import RegistrationForm, LoginForm
+from catalog_app.models import User, Categories, Items, session
 from flask_login import login_user
-
-app = Flask(__name__)
-bcrypt = Bcrypt(app)
-app.config['SECRET_KEY'] = '7e158f52147dd91eb8853151dea4da9a'
+from flask import render_template, url_for, flash, redirect
 
 
 categories = [
@@ -15,7 +11,7 @@ categories = [
 ]
 
 
-@app.route('/')
+@app.route('/',methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def user_login():
     form = LoginForm()
@@ -23,7 +19,7 @@ def user_login():
         user = session.query(User).filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect(url_for('home'))
+            return redirect(url_for('user_registration'))
         else:
             flash(f'Login Not Success!', 'danger')
     return render_template('index.html', title='Login', form=form)
