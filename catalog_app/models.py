@@ -5,9 +5,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from catalog_app import login_manager
 from flask_login import UserMixin
+from sqlalchemy.pool import StaticPool
 
-
-engine = create_engine('sqlite:///categories.db', echo=True)
+engine = create_engine('sqlite:///categories.db', connect_args={'check_same_thread': False},
+                       poolclass=StaticPool, echo=True)
 Base = declarative_base(bind=engine)
 DBSession = sessionmaker(bind=engine)
 session = DBSession()

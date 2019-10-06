@@ -2,24 +2,25 @@ import os
 from catalog_app import app, bcrypt
 from catalog_app.forms import RegistrationForm, LoginForm
 from catalog_app.models import User, Categories, Items, session
-from flask_login import login_user
+from flask_login import login_user, current_user, logout_user
 from flask import render_template, url_for, flash, redirect
-
 
 categories = [
     'Soccer', 'BasketBall', 'BaseBall', 'Frisbee', 'Snowboarding'
 ]
 
 
-@app.route('/',methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def user_login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
         user = session.query(User).filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect(url_for('user_registration'))
+            return redirect(url_for('home'))
         else:
             flash(f'Login Not Success!', 'danger')
     return render_template('index.html', title='Login', form=form)
@@ -27,6 +28,8 @@ def user_login():
 
 @app.route('/register', methods=['GET', 'POST'])
 def user_registration():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(
@@ -41,6 +44,14 @@ def user_registration():
     return render_template('register.html', titile='Registration', form=form)
 
 
-if __name__ == "__main__":
-    app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    if not current_user.is_authenticated:
+        return redirect(url_for('user_login'))
+    return render_template('home.html', user=current_user.name)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('user_login'))
