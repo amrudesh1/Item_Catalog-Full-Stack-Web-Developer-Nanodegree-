@@ -2,6 +2,48 @@
 <html>
 
 <head>
+    <style type="text/css">
+        a.btn:hover {
+            -webkit-transform: scale(1.1);
+            -moz-transform: scale(1.1);
+            -o-transform: scale(1.1);
+        }
+
+        a.btn {
+            -webkit-transform: scale(0.8);
+            -moz-transform: scale(0.8);
+            -o-transform: scale(0.8);
+            -webkit-transition-duration: 0.5s;
+            -moz-transition-duration: 0.5s;
+            -o-transition-duration: 0.5s;
+            float: right;
+        }
+
+        td {
+            text-align: left;
+        }
+
+        .table-row {
+            cursor: pointer;
+        }
+
+        .container1 {
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        .floatLeft {
+            width: 50%;
+            float: left;
+        }
+
+        .floatRight {
+            width: 50%;
+            float: right;
+            padding-left: 10px;
+        }
+
+    </style>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>Catalog-App Home</title>
@@ -24,20 +66,65 @@
     </div>
 
     <div class="nav navbar-nav navbar-right">
-        <a href="{{ url_for('logout') }}" class="navbar-brand"><h6>{% if user is defined %}{{'Hi'+" "+ user }}{% endif %}</h6>
+        <a href="" class="navbar-brand"><h6>{% if user is defined %}{{ 'Hi'+" "+ user }}{% endif %}</h6>
         </a>
         <a href="{{ url_for('logout') }}" class="navbar-brand"><h6>Logout</h6></a>
     </div>
     </div>
 </nav>
 
-<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <h1 class="display-5">Fluid jumbotron</h1>
-        <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+<div class="jumbotron">
+    <div class="container1">
+        {# <h1 class="display-5">Fluid jumbotron</h1>
+        <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>#}
+        <div class="floatLeft">
+            <table style="width:100%" class='table table-bordered table-condensed table-striped table-hover'
+                   style="display: inline-block">
+                <tr>
+                    <th>Categories</th>
+                </tr>
+                {% for categories in categorie %}
+                    <tr onclick="respondBack()" class="table-row">
+                        <td>{{ categories.category_name }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="floatRight">
+            <table style="width:100%" class='table table-bordered table-condensed table-striped table-hover'
+                   style="display: inline-block">
+                <tr>
+                    <th>Items</th>
+                </tr>
+                {% for categories in categorie %}
+                    <tr>
+                        <td>{{ categories.category_name }}
+                            <a href="#" class="btn btn-primary a-btn-slide-text">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                <span><strong>Delete</strong></span>
+                            </a>
+                            <a href="#" class="btn btn-primary a-btn-slide-text">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                <span><strong>Edit</strong></span> </a>
+                            <a href="#" class="btn btn-primary a-btn-slide-text">
+                                <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                <span><strong>View</strong></span>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
     </div>
 </div>
 
+<script>
+    function respondBack() {
+        alert("I am an alert box!");
+    }
+</script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>

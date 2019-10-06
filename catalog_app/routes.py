@@ -48,7 +48,8 @@ def user_registration():
 def home():
     if not current_user.is_authenticated:
         return redirect(url_for('user_login'))
-    return render_template('home.html', user=current_user.name)
+    return render_template('home.html', user=current_user.name,
+                           categorie=session.query(Categories).filter_by(user_id=current_user.id).all())
 
 
 @app.route('/logout')
