@@ -1,0 +1,105 @@
+<!-- Top content -->
+{% extends "layout.html" %}
+{% block nav %}
+    <ul class="navbar-nav navbar-right">
+        <a class="nav-link" href="{{ url_for('user_login') }}">Login</a>
+        <a class="nav-link" href="{{ url_for('user_registration') }}">Register</a>
+
+    </ul>
+{% endblock nav %}
+{% block content %}
+    <div class="top-content">
+
+        <div class="inner-bg">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-sm-8 col-sm-offset-2 text">
+                        <h1><strong>Catalog-App</strong></h1>
+                        <div class="description">
+                        </div>
+                    </div>
+                </div>
+                {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %} {% endif %} {% endwith %}
+                <div class="row">
+                    <div class="col-sm-8 col-sm-offset-2 text">
+                        <div class="form-box">
+                            <div class="form-top">
+                                <div class="form-top-left">
+                                    <h3>Login to our site</h3>
+                                    <p>Enter username and password to log on:</p>
+                                </div>
+                                <div class="form-top-right">
+                                    <i class="fa fa-lock"></i>
+                                </div>
+                            </div>
+                            <div class="form-bottom">
+                                <form role="form" action="" method="post" class="login-form">
+                                    {{ form.hidden_tag() }}
+                                    <div class="form-group">
+                                        {{ form.email.label(class="form-control-label") }} {% if form.email.errors %}
+                                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.email.errors %}
+                                                <span>{{ error }}</span> {% endfor %}
+                                        </div>
+                                    {% else %} {{ form.email(class="form-control form-control-lg") }} {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.password.label(class="form-control-label") }}
+                                        {% if form.password.errors %}
+                                            {{ form.password(class="form-control form-control-lg is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.password.errors %}
+                                                    <span>{{ error }}</span> {% endfor %}
+                                            </div>
+                                        {% else %} {{ form.password(class="form-control form-control-lg") }} {% endif %}
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.remember(class="form-check-input") }} {{ form.remember.label(class="form-check-label") }}
+                                    </div>
+                                    <button type="submit" class="btn">Sign in!</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="account-top">
+                            <h4>Dont have a account ? <a href={{ url_for( 'user_registration') }}>Create One</a></h4>
+                        </div>
+                        <div class="social-login">
+                            <h3>...or login with:</h3>
+                            <div class="social-login-buttons">
+                                <a class="btn btn-link-2" href="#">
+                                    <i class="fa fa-facebook"></i> Facebook
+                                </a>
+                                <a class="btn btn-link-2" href="#">
+                                    <i class="fa fa-twitter"></i> Twitter
+                                </a>
+                                <a class="btn btn-link-2" href="#">
+                                    <i class="fa fa-google-plus"></i> Google Plus
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Javascript -->
+        <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+        <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/jquery.backstretch.min.js') }}"></script>
+        <script src="{{ url_for('static',filename='js/scripts.js') }}"></script>
+
+        <!--[if lt IE 10]>
+            <script src="{{url_for('static',filename='js/placeholder.js')}}"></script>
+        <![endif]-->
+    </div>
+{% endblock content %}

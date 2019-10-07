@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block nav %}
+    <ul class="navbar-nav navbar-right">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+        {% else %}
+            <a class="nav-link" href="{{ url_for('user_login') }}">Login</a>
+            <a class="nav-link" href="{{ url_for('user_registration') }}">Register</a>
+        {% endif %}
+    </ul>
+{% endblock nav %}
+{% block content %}
+    <div class="jumbotron">
+        <div class="container1">
+            {# <h1 class="display-5">Fluid jumbotron</h1>
+        <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>#}
+            <div class="floatLeft">
+                <table style="width:100%" class="table-bordered table-dark table-hover">
+                    <tr>
+                        <th>Categories</th>
+                    </tr>
+                    {% for categories in categorie %}
+                        <tr onclick="respondBack()" class="table-row">
+                            <td>{{ categories.category_name }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div class="floatRight">
+                <table style="width:100%" class='table table-dark table-hover'
+                       style="display: inline-block">
+                    <tr>
+                        <th>Items</th>
+                    </tr>
+                    {% for categories in categorie %}
+                        <tr>
+                            <td>{{ categories.category_name }}
+                                {% if current_user.is_authenticated %}
+                                    {% if categories.user_id == current_user.id %}
+                                        <a href="#" class="btn btn-primary a-btn-slide-text">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                            <span><strong>Delete</strong></span>
+                                        </a>
+                                        <a href="#" class="btn btn-primary a-btn-slide-text">
+                                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                            <span><strong>Edit</strong></span> </a>
+                                    {% endif %}
+                                {% endif %}
+                                <a href="#" class="btn btn-primary a-btn-slide-text">
+                                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                    <span><strong>View</strong></span>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <script>
+        function respondBack() {
+            alert("I am an alert box!");
+        }
+    </script>
+{% endblock content %}
