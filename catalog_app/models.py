@@ -44,7 +44,7 @@ class Items(Base):
     __tablename__ = 'items'
     id = Column(Integer, primary_key=True)
     name = Column(String(20), nullable=False)
-    description = Column(String(200))
+    description = Column(String(200),nullable=True)
     user_id = (Column(Integer, ForeignKey('user.id')))
     cat_id = Column(Integer, ForeignKey('categories.category_id'))
 

@@ -14,9 +14,6 @@ from flask import session as login_session
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 import requests
 
-categories = [
-    'Soccer', 'BasketBall', 'BaseBall', 'Frisbee', 'Snowboarding'
-]
 
 GOOGLE_CLIENT_ID = '668405259059-sb3qfvqp75r1af4s578p181kbo3lvucs.apps.googleusercontent.com'
 
