@@ -21,7 +21,7 @@
                         <th>Categories</th>
                     </tr>
                     {% for categories in categorie %}
-                        <tr onclick="respondBack()" class="table-row">
+                        <tr class="table-row">
                             <td>{{ categories.category_name }}</td>
                         </tr>
                     {% endfor %}
@@ -64,8 +64,14 @@
 
 
     <script>
-        function respondBack() {
-            alert("I am an alert box!");
+        function sendPost() {
+
+        }
+
+
+        function loadTable() {
+            var rows = '';
         }
     </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 {% endblock content %}

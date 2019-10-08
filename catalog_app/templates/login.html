@@ -1,5 +1,9 @@
 <!-- Top content -->
 {% extends "layout.html" %}
+{% block head %}
+    <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+{% endblock head %}
 {% block nav %}
     <ul class="navbar-nav navbar-right">
         <a class="nav-link" href="{{ url_for('user_login') }}">Login</a>
@@ -71,34 +75,69 @@
                             <h4>Dont have a account ? <a href={{ url_for( 'user_registration') }}>Create One</a></h4>
                         </div>
                         <div class="social-login">
-                            <h3>...or login with:</h3>
-                            <div class="social-login-buttons">
-                                <a class="btn btn-link-2" href="#">
-                                    <i class="fa fa-facebook"></i> Facebook
-                                </a>
-                                <a class="btn btn-link-2" href="#">
-                                    <i class="fa fa-twitter"></i> Twitter
-                                </a>
-                                <a class="btn btn-link-2" href="#">
-                                    <i class="fa fa-google-plus"></i> Google Plus
-                                </a>
-                            </div>
+                            <span class="g-signin"
+                                  data-scope="openid email"
+                                  data-clientid="{{ client_id }}"
+                                  data-redirecturi="postmessage"
+                                  data-accesstype="offline"
+                                  data-cookiepolicy="single_host_origin"
+                                  data-callback="signInCallback"
+                                  data-approvalprompt="force">
+                                   <a class="btn btn-link-2">
+                                <i class="fa fa-google-plus"></i> Google Plus </a>
+
+                            </span>
+
                         </div>
 
                     </div>
-
                 </div>
             </div>
-
         </div>
+    </div>
 
-        <!-- Javascript -->
-        <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
-        <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.min.js') }}"></script>
-        <script src="{{ url_for('static',filename='js/jquery.backstretch.min.js') }}"></script>
-        <script src="{{ url_for('static',filename='js/scripts.js') }}"></script>
+    <!-- Javascript -->
+    <script src="{{ url_for('static',filename='js/jquery-1.11.1.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery.backstretch.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/scripts.js') }}"></script>
+    <script>
 
-        <!--[if lt IE 10]>
+        function signInCallback(authResult) {
+            if (authResult['code']) {
+                // Hide the sign-in button now that the user is authorized
+                $('.social-login').attr('style', 'display: hide');
+
+                // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+                $.ajax({
+                    type: 'POST',
+                    url: '/gconnect?state={{STATE}}',
+                    processData: false,
+                    data: authResult['code'],
+                    contentType: 'application/octet-stream; charset=utf-8',
+                    success: function (result) {
+                        // Handle or verify the server response if necessary.
+                        if (result) {
+                            $('#result').html(result)
+                            setTimeout(function () {
+                                window.location.href = "/";
+                            }, 4000);
+
+
+                        } else if (authResult['error']) {
+
+                            console.log('There was an error: ' + authResult['error']);
+                        } else {
+                            $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+                        }
+
+                    }
+
+                });
+            }
+        }
+    </script>
+    <!--[if lt IE 10]>
             <script src="{{url_for('static',filename='js/placeholder.js')}}"></script>
         <![endif]-->
     </div>
