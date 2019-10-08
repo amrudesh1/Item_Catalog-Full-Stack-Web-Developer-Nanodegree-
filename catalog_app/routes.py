@@ -19,10 +19,6 @@ categories = [
 ]
 
 GOOGLE_CLIENT_ID = '668405259059-sb3qfvqp75r1af4s578p181kbo3lvucs.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET = 'gXlzEAqVzRf7_SK8TcSDLoDm'
-GOOGLE_DISCOVERY_URL = (
-    "https://accounts.google.com/.well-known/openid-configuration"
-)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -63,8 +59,10 @@ def user_registration():
 
 
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
 def homeMain():
     return render_template('main.html', categorie=session.query(Categories).filter_by().all(),
+                           items=session.query(Items).order_by(Items.id.desc()).all(),
                            current_user=current_user)
 
 
@@ -219,3 +217,15 @@ def create_user(login_session):
     session.commit()
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
+
+
+@app.route('/home/<string:categories_name>/items')
+def getCategories(categories_name):
+    flash(categories_name)
+
+    cat_id = session.query(Categories).filter(Categories.category_name == categories_name).first()
+    item = session.query(Items).filter(Items.cat_id == cat_id.category_id).all()
+    print(cat_id.category_id)
+    return render_template('view_items.html', categorie=session.query(Categories).all(),
+                           items=item,
+                           current_user=current_user)
