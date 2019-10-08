@@ -10,21 +10,21 @@
 
     </title>
     <style type="text/css">
-        a.btn:hover {
-            -webkit-transform: scale(1.1);
-            -moz-transform: scale(1.1);
-            -o-transform: scale(1.1);
-        }
+        {#  a.btn:hover {
+              -webkit-transform: scale(1.1);
+              -moz-transform: scale(1.1);
+              -o-transform: scale(1.1);
+          }
 
-        a.btn {
-            -webkit-transform: scale(0.8);
-            -moz-transform: scale(0.8);
-            -o-transform: scale(0.8);
-            -webkit-transition-duration: 0.5s;
-            -moz-transition-duration: 0.5s;
-            -o-transition-duration: 0.5s;
-            float: right;
-        }
+          a.btn {
+              -webkit-transform: scale(0.8);
+              -moz-transform: scale(0.8);
+              -o-transform: scale(0.8);
+              -webkit-transition-duration: 0.5s;
+              -moz-transition-duration: 0.5s;
+              -o-transition-duration: 0.5s;
+              float: right;
+          }#}
 
         td {
             text-align: left;
@@ -61,6 +61,8 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='font-awesome/css/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/form-elements.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
+    {% block head %}
+    {% endblock%}
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
