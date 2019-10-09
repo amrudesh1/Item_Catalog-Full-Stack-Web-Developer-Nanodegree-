@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% block head %}
+    <style>
+        .jumbotron {
+            height: 100%;
+            width: 100%;
+        }
+
+        .container {
+            width: 1000px;
+        }
+
+        .jumbotron .container {
+            max-width: 100%;
+        }
+
+        .form-control {
+            margin-top: 5%;
+            width: 50%;
+        }
+    </style>
+{% endblock %}
+{% block nav %}
+    <ul class="navbar-nav navbar-right">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+        {% else %}
+            <a class="nav-link" href="{{ url_for('user_login') }}">Login</a>
+            <a class="nav-link" href="{{ url_for('user_registration') }}">Register</a>
+        {% endif %}
+    </ul>
+{% endblock nav %}
+
+{% block content %}
+    <form method="post">
+        <div class="container">
+            <div class="jumbotron">
+                <h3 class="display-4">Catalog App</h3>
+                <input type="text" name="ItemName" class="form-control controller" placeholder="Item Name"
+                       value="{{ item.name }}  ">
+                <br>
+                <textarea class="form-control" name="ItemDesc" id="exampleFormControlTextarea1" rows="5"
+                          placeholder="Description">{{ item.description }}</textarea>
+                <select class="form-control form-control-sm" name="ItemSelect">
+                    <option value="{{ cat.category_id }}">{{ cat.category_name }}</option>
+                    {% for category in categories %}
+                        <option value="{{ category.category_name }}">
+                            {% if category.category_name != cat.category_name %}
+                                {{ category.category_name }}
+                            {% endif %}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+                <br>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </div>
+    </form>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        $('select option')
+            .filter(function () {
+                return !this.value || $.trim(this.value).length == 0 || $.trim(this.text).length == 0;
+            })
+            .remove()
+    </script>
+{% endblock content %}

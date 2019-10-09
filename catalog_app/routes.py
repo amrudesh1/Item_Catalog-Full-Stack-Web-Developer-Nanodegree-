@@ -14,7 +14,6 @@ from flask import session as login_session
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 import requests
 
-
 GOOGLE_CLIENT_ID = '668405259059-sb3qfvqp75r1af4s578p181kbo3lvucs.apps.googleusercontent.com'
 
 
@@ -226,3 +225,33 @@ def getCategories(categories_name):
     return render_template('view_items.html', categorie=session.query(Categories).all(),
                            items=item,
                            current_user=current_user)
+
+
+@app.route('/home/<string:itemName>/edit', methods=['GET', 'POST'])
+def editItem(itemName):
+    name = ''
+    desc = ''
+    print(itemName)
+    item = session.query(Items).filter(Items.name == itemName).first()
+    cat = session.query(Categories).filter(Categories.category_id == item.cat_id).first()
+    categories = session.query(Categories).all()
+    if request.method == 'POST':
+        for key in request.form:
+            if key == 'ItemName':
+                name = request.form[key]
+                print(name)
+            elif key == 'ItemDesc':
+                desc = request.form[key]
+                print(desc)
+            elif key == 'ItemSelect':
+                cat_id = request.form[key]
+                print(cat_id)
+
+                item = session.query(Items).filter_by(id=item.id).one()
+                item.name = name
+                item.description = desc
+                item.cat_id = cat_id
+                item.user_id = current_user.id
+                session.add(item)
+                session.commit()
+    return render_template('edit_item', item=item, cat=cat, categories=categories)
