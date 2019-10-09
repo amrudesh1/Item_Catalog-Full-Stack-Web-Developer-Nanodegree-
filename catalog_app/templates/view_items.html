@@ -43,36 +43,47 @@
                                         {{ '('+ categories.category_name +')' }}
                                     {% endif %}
                                 {% endfor %}
+                                <a class="btn btn-primary a-btn-slide-text view_clickable"
+                                   data-href='{{ item.description }}'>
+                                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                                    <span><strong>View</strong></span>
+                                </a>
                                 {% if current_user.is_authenticated %}
                                     {% if item.user_id == current_user.id %}
                                         <a href="#" class="btn btn-primary a-btn-slide-text">
                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                             <span><strong>Delete</strong></span>
                                         </a>
-                                        <a href="#" class="btn btn-primary a-btn-slide-text">
+                                        <a class="btn btn-primary a-btn-slide-text">
                                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                             <span><strong>Edit</strong></span> </a>
                                     {% endif %}
                                 {% endif %}
-                                <a href="#" class="btn btn-primary a-btn-slide-text">
-                                    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-                                    <span><strong>View</strong></span>
-                                </a>
                             </td>
                         </tr>
                     {% endfor %}
                 </table>
             </div>
-
         </div>
     </div>
 
 
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
-          jQuery(document).ready(function ($) {
+        jQuery(document).ready(function ($) {
             $(".clickable-row").click(function () {
                 window.location = '/home/' + ($(this).data("href")) + '/items';
+
+            });
+        });
+
+        jQuery(document).ready(function ($) {
+            $(".view_clickable").click(function () {
+                bootbox.alert({
+                    message: ($(this).data("href")),
+                    size: 'large'
+                });
 
             });
         });
