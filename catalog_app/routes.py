@@ -9,7 +9,7 @@ from catalog_app import app, bcrypt
 from catalog_app.forms import RegistrationForm, LoginForm
 from catalog_app.models import User, Categories, Items, session
 from flask_login import login_user, current_user, logout_user
-from flask import render_template, url_for, flash, redirect, request, make_response
+from flask import render_template, url_for, flash, redirect, request, make_response, jsonify
 from flask import session as login_session
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 import requests
@@ -57,6 +57,26 @@ def user_registration():
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/home', methods=['GET', 'POST'])
 def homeMain():
+    if request.method == 'POST':
+        print(request.form['name'])
+        data = request.form['name']
+        item = session.query(Items).filter_by(name=data).one()
+        session.delete(item)
+        failed = False
+        try:
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            session.flush()
+            failed = True
+
+        if not failed:
+            flash(f'Deleted Successfully', 'success')
+        else:
+            flash(f'Not Deleted Successfully', 'danger')
+
+        return redirect(url_for('homeMain'))
+
     return render_template('main.html', categorie=session.query(Categories).filter_by().all(),
                            items=session.query(Items).order_by(Items.id.desc()).all(),
                            current_user=current_user)
@@ -215,9 +235,27 @@ def create_user(login_session):
     return user.id
 
 
-@app.route('/home/<string:categories_name>/items')
+@app.route('/home/<string:categories_name>/items', methods=['GET', 'POST'])
 def getCategories(categories_name):
-    flash(categories_name)
+    if request.method == 'POST':
+        print(request.form['name'])
+        data = request.form['name']
+        item = session.query(Items).filter_by(name=data).one()
+        session.delete(item)
+        failed = False
+        try:
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            session.flush()
+            failed = True
+
+        if not failed:
+            flash(f'Deleted Successfully', 'success')
+        else:
+            flash(f'Not Deleted Successfully', 'danger')
+
+        return redirect(url_for('getCategories'))
 
     cat_id = session.query(Categories).filter(Categories.category_name == categories_name).first()
     item = session.query(Items).filter(Items.cat_id == cat_id.category_id).all()
@@ -231,6 +269,7 @@ def getCategories(categories_name):
 def editItem(itemName):
     name = ''
     desc = ''
+    cat_id = ''
     print(itemName)
     item = session.query(Items).filter(Items.name == itemName).first()
     cat = session.query(Categories).filter(Categories.category_id == item.cat_id).first()
@@ -240,18 +279,104 @@ def editItem(itemName):
             if key == 'ItemName':
                 name = request.form[key]
                 print(name)
-            elif key == 'ItemDesc':
+
+            if key == 'ItemDesc':
                 desc = request.form[key]
                 print(desc)
-            elif key == 'ItemSelect':
+
+            if key == 'ItemSelect':
                 cat_id = request.form[key]
                 print(cat_id)
 
-                item = session.query(Items).filter_by(id=item.id).one()
-                item.name = name
-                item.description = desc
-                item.cat_id = cat_id
-                item.user_id = current_user.id
-                session.add(item)
-                session.commit()
+        print(name + ' ' + desc + ' ' + cat_id + "Data to be Updated")
+        item = session.query(Items).filter_by(id=item.id).one()
+        item.name = name
+        item.description = desc
+        item.cat_id = cat_id
+        item.user_id = current_user.id
+        session.add(item)
+        failed = False
+        try:
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            session.flush()
+            failed = True
+
+        if not failed:
+            flash(f'Updated Successfully', 'success')
+        else:
+            flash(f'Not Updated Successfully', 'danger')
+
+        return redirect(url_for('homeMain'))
     return render_template('edit_item', item=item, cat=cat, categories=categories)
+
+
+@app.route('/addItem', methods=['GET', 'POST'])
+def addItem():
+    name = ''
+    desc = ''
+    cat_id = ''
+    categories = session.query(Categories).all()
+    if request.method == 'POST':
+        for key in request.form:
+            if key == 'ItemName':
+                name = request.form[key]
+                print(name)
+
+            if key == 'ItemDesc':
+                desc = request.form[key]
+                print(desc)
+
+            if key == 'ItemSelect':
+                cat_id = request.form[key]
+                print(cat_id)
+
+        item = Items(name=name,
+                     description=desc,
+                     user_id=current_user.id, cat_id=cat_id)
+        session.add(item)
+        session.commit()
+
+        return redirect(url_for('homeMain'))
+
+    return render_template('addItem.html', categories=categories)
+
+
+@app.route('/home/categories/<int:category_id>/item/<int:item_id>/JSON')
+def catalog_item_json(category_id, item_id):
+    """Return JSON of a particular item in the catalog."""
+
+    if exists_category(category_id) and exists_item(item_id):
+        item = session.query(Items) \
+            .filter_by(id=item_id, cat_id=category_id).first()
+        if item is not None:
+            return jsonify(item=item.serialize)
+        else:
+            return jsonify(
+                error='item {} does not belong to category {}.'
+                    .format(item_id, category_id))
+    else:
+        return jsonify(error='The item or the category does not exist.')
+
+
+@app.route('/home/categories/JSON')
+def categories_json():
+    categories = session.query(Categories).all()
+    return jsonify(categories=[i.serialize for i in categories])
+
+
+def exists_category(category_id):
+    category = session.query(Categories).filter_by(category_id=category_id).first()
+    if category is not None:
+        return True
+    else:
+        return False
+
+
+def exists_item(item_id):
+    item = session.query(Items).filter_by(id=item_id).first()
+    if item is not None:
+        return True
+    else:
+        return False

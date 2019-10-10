@@ -39,14 +39,36 @@ class Categories(Base):
     category_name = Column(String(50), unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
 
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+
+        return {
+            'category_id': self.category_id,
+            'category_name': self.category_name,
+            'user_id': self.user_id
+        }
+
 
 class Items(Base):
     __tablename__ = 'items'
     id = Column(Integer, primary_key=True)
     name = Column(String(20), nullable=False)
-    description = Column(String(200),nullable=True)
+    description = Column(String(200), nullable=True)
     user_id = (Column(Integer, ForeignKey('user.id')))
     cat_id = Column(Integer, ForeignKey('categories.category_id'))
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+
+        return {
+            'item_id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'user_id': self.user_id,
+            'cat_id': self.cat_id
+        }
 
 
 Base.metadata.create_all(engine)
