@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
 {% block head %}
     <style>
         .jumbotron {
@@ -30,40 +30,31 @@
         {% endif %}
     </ul>
 {% endblock nav %}
-
 {% block content %}
     <form method="post">
         <div class="container">
             <div class="jumbotron">
-                <h3 class="display-4">Catalog App</h3>
-                <input type="text" name="ItemName" class="form-control controller" placeholder="Item Name"
-                       value="{{ item.name }}  ">
+                <h3 class="display-4">Catalog App - Add Item</h3>
+                <br>
+                <input type="text" name="ItemName" class="form-control controller" placeholder="Item Name" required>
                 <br>
                 <textarea class="form-control" name="ItemDesc" id="exampleFormControlTextarea1" rows="5"
-                          placeholder="Description">{{ item.description }}</textarea>
+                          placeholder="Description" required></textarea>
                 <select class="form-control form-control-sm" name="ItemSelect">
-                    <option value="{{ cat.category_id }}">{{ cat.category_name }}</option>
                     {% for category in categories %}
                         <option value="{{ category.category_id }}">
-                            {% if category.category_name != cat.category_name %}
-                                {{ category.category_name }}
-                            {% endif %}
+                            {{ category.category_name }}
                         </option>
 
                     {% endfor %}
 
                 </select>
                 <br>
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" class="btn btn-primary">Add Item</button>
             </div>
         </div>
     </form>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
-        $('select option')
-            .filter(function () {
-                return !this.value || $.trim(this.value).length == 0 || $.trim(this.text).length == 0;
-            })
-            .remove()
+
     </script>
 {% endblock content %}

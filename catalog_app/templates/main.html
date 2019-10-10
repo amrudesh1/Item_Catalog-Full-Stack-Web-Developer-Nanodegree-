@@ -10,6 +10,12 @@
         {% endif %}
     </ul>
 {% endblock nav %}
+{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+    {% endfor %} {% endif %} {% endwith %}
 {% block content %}
     <div class="jumbotron">
         <div class="container1">
@@ -49,11 +55,12 @@
                                 </a>
                                 {% if current_user.is_authenticated %}
                                     {% if item.user_id == current_user.id %}
-                                        <a href="#" class="btn btn-primary a-btn-slide-text">
+                                        <a class="btn btn-primary a-btn-slide-text view_delete"
+                                           data-href='{{ item.name }}'>
                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                             <span><strong>Delete</strong></span>
                                         </a>
-                                        <a href="#" class="btn btn-primary a-btn-slide-text view_edit"
+                                        <a class="btn btn-primary a-btn-slide-text view_edit"
                                            data-href='{{ item.name }}'>
                                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                             <span><strong>Edit</strong></span> </a>
@@ -64,6 +71,8 @@
                         </tr>
                     {% endfor %}
                 </table>
+                <a href="{{ url_for('addItem') }}"><h5>Add Item</h5></a>
+
             </div>
 
         </div>
@@ -81,10 +90,43 @@
 
         jQuery(document).ready(function ($) {
             $(".view_edit").click(function () {
-                window.location = '/home/' + ($(this).data("href")) + '/edit';
+                window.location = '/home/' + $(this).data("href") + '/edit';
 
             });
         });
+        $(".view_delete").click(function () {
+            const data = $(this).data("href");
+            callConfirm(b1checkConfirm.bind({data: data}));
+        });
+
+        function callConfirm(cb) {
+            bootbox.confirm({
+                message: "Are You sure you want to delete",
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-danger'
+                    }
+
+                },
+                callback: cb
+            });
+
+        }
+
+        function b1checkConfirm(result) {
+            if (result) {
+                $.post('', {name: this.data});
+                location.reload();
+
+            }
+
+        }
+
         jQuery(document).ready(function ($) {
             $(".view_clickable").click(function () {
                 bootbox.alert({
