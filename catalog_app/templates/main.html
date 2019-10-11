@@ -32,6 +32,9 @@
                         </tr>
                     {% endfor %}
                 </table>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('add_category') }}"><h5>Add Category</h5></a>
+                {% endif %}
             </div>
 
             <div class="floatRight">
@@ -71,7 +74,9 @@
                         </tr>
                     {% endfor %}
                 </table>
-                <a href="{{ url_for('addItem') }}"><h5>Add Item</h5></a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('addItem') }}"><h5>Add Item</h5></a>
+                {% endif %}
 
             </div>
 

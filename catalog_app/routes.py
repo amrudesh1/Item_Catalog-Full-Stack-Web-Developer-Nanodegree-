@@ -267,6 +267,8 @@ def getCategories(categories_name):
 
 @app.route('/home/<string:itemName>/edit', methods=['GET', 'POST'])
 def editItem(itemName):
+    if not current_user.is_authenticated:
+        return redirect(url_for('homeMain'))
     name = ''
     desc = ''
     cat_id = ''
@@ -309,11 +311,13 @@ def editItem(itemName):
             flash(f'Not Updated Successfully', 'danger')
 
         return redirect(url_for('homeMain'))
-    return render_template('edit_item', item=item, cat=cat, categories=categories)
+    return render_template('edit_item.html', item=item, cat=cat, categories=categories)
 
 
 @app.route('/addItem', methods=['GET', 'POST'])
 def addItem():
+    if not current_user.is_authenticated:
+        return redirect(url_for('homeMain'))
     name = ''
     desc = ''
     cat_id = ''
@@ -364,6 +368,34 @@ def catalog_item_json(category_id, item_id):
 def categories_json():
     categories = session.query(Categories).all()
     return jsonify(categories=[i.serialize for i in categories])
+
+
+@app.route('/home/addCategory', methods=['GET', 'POST'])
+def add_category():
+    if not current_user.is_authenticated:
+        return redirect(url_for('homeMain'))
+    name = ''
+    if request.method == 'POST':
+        for key in request.form:
+            if key == 'ItemName':
+                name = request.form[key]
+                print(name)
+        category = Categories(category_name=name, user_id=current_user.id)
+        session.add(category)
+        failed = False
+        try:
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            session.flush()
+            failed = True
+
+        if not failed:
+            flash(f'Added Successfully', 'success')
+        else:
+            flash(f'Not Added Successfully', 'danger')
+        return redirect(url_for('homeMain'))
+    return render_template('add_category.html')
 
 
 def exists_category(category_id):

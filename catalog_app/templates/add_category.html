@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% block head %}
+    <style>
+        .jumbotron {
+            height: 100%;
+            width: 100%;
+        }
+
+        .container {
+            width: 1000px;
+        }
+
+        .jumbotron .container {
+            max-width: 100%;
+        }
+
+        .form-control {
+            margin-top: 5%;
+            width: 50%;
+        }
+    </style>
+{% endblock %}
+{% block nav %}
+    <ul class="navbar-nav navbar-right">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+        {% else %}
+            <a class="nav-link" href="{{ url_for('user_login') }}">Login</a>
+            <a class="nav-link" href="{{ url_for('user_registration') }}">Register</a>
+        {% endif %}
+    </ul>
+{% endblock nav %}
+{% block content %}
+    <form method="post">
+        <div class="container">
+            <div class="jumbotron">
+                <h3 class="display-4">Catalog App - Add Item</h3>
+                <br>
+                <input type="text" name="ItemName" class="form-control controller" placeholder="Category Name" required>
+                <br>
+                <button type="submit" class="btn btn-primary">Add Category</button>
+            </div>
+        </div>
+    </form>
+    <script>
+
+    </script>
+{% endblock content %}
