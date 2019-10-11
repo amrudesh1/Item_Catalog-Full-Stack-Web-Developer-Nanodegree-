@@ -10,13 +10,14 @@
         {% endif %}
     </ul>
 {% endblock nav %}
-{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
-    {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">
-            {{ message }}
-        </div>
-    {% endfor %} {% endif %} {% endwith %}
+
 {% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %} {% endif %} {% endwith %}
     <div class="jumbotron">
         <div class="container1">
             {# <h1 class="display-5">Fluid jumbotron</h1>

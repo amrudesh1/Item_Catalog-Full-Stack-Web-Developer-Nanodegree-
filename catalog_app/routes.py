@@ -9,12 +9,14 @@ from catalog_app import app, bcrypt
 from catalog_app.forms import RegistrationForm, LoginForm
 from catalog_app.models import User, Categories, Items, session
 from flask_login import login_user, current_user, logout_user
-from flask import render_template, url_for, flash, redirect, request, make_response, jsonify
+from flask import render_template, \
+    url_for, flash, redirect, request, make_response, jsonify
 from flask import session as login_session
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 import requests
 
-GOOGLE_CLIENT_ID = '668405259059-sb3qfvqp75r1af4s578p181kbo3lvucs.apps.googleusercontent.com'
+GOOGLE_CLIENT_ID = '668405259059-sb3qfvqp75r1af4s' \
+                   '578p181kbo3lvucs.apps.googleusercontent.com'
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -24,7 +26,8 @@ def user_login():
     form = LoginForm()
     if form.validate_on_submit():
         user = session.query(User).filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
+        if user and bcrypt.check_password_hash(user.password,
+                                               form.password.data):
             login_user(user, remember=form.remember.data)
             return redirect(url_for('homeMain'))
         else:
@@ -33,7 +36,8 @@ def user_login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in range(32))
     login_session['state'] = state
-    return render_template('login.html', title='Login', form=form, STATE=state, client_id=GOOGLE_CLIENT_ID)
+    return render_template('login.html', title='Login',
+                           form=form, STATE=state, client_id=GOOGLE_CLIENT_ID)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -61,24 +65,28 @@ def homeMain():
         print(request.form['name'])
         data = request.form['name']
         item = session.query(Items).filter_by(name=data).one()
-        session.delete(item)
-        failed = False
-        try:
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            session.flush()
-            failed = True
+        if item.user_id == current_user.id:
+            session.delete(item)
+            failed = False
+            try:
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                session.flush()
+                failed = True
+                if not failed:
+                    flash(f'Deleted Successfully', 'success')
+                else:
+                    flash(f'Not Deleted Successfully', 'danger')
 
-        if not failed:
-            flash(f'Deleted Successfully', 'success')
+                return redirect(url_for('homeMain'))
         else:
-            flash(f'Not Deleted Successfully', 'danger')
+            flash(f'User is not Authenticated to Delete the Item', 'danger')
 
-        return redirect(url_for('homeMain'))
-
-    return render_template('main.html', categorie=session.query(Categories).filter_by().all(),
-                           items=session.query(Items).order_by(Items.id.desc()).all(),
+    return render_template('main.html',
+                           categorie=session.query(Categories).all(),
+                           items=session.query(Items)
+                           .order_by(Items.id.desc()).all(),
                            current_user=current_user)
 
 
@@ -215,7 +223,7 @@ def get_user_id(email):
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
-    except:
+    except BaseException:
         return None
 
 
@@ -257,10 +265,13 @@ def getCategories(categories_name):
 
         return redirect(url_for('getCategories'))
 
-    cat_id = session.query(Categories).filter(Categories.category_name == categories_name).first()
-    item = session.query(Items).filter(Items.cat_id == cat_id.category_id).all()
+    cat_id = session.query(Categories). \
+        filter(Categories.category_name == categories_name).first()
+    item = session.query(Items). \
+        filter(Items.cat_id == cat_id.category_id).all()
     print(cat_id.category_id)
-    return render_template('view_items.html', categorie=session.query(Categories).all(),
+    return render_template('view_items.html',
+                           categorie=session.query(Categories).all(),
                            items=item,
                            current_user=current_user)
 
@@ -274,7 +285,8 @@ def editItem(itemName):
     cat_id = ''
     print(itemName)
     item = session.query(Items).filter(Items.name == itemName).first()
-    cat = session.query(Categories).filter(Categories.category_id == item.cat_id).first()
+    cat = session.query(Categories). \
+        filter(Categories.category_id == item.cat_id).first()
     categories = session.query(Categories).all()
     if request.method == 'POST':
         for key in request.form:
@@ -289,29 +301,32 @@ def editItem(itemName):
             if key == 'ItemSelect':
                 cat_id = request.form[key]
                 print(cat_id)
+        if item.user_id == current_user.id:
+            print(name + ' ' + desc + ' ' + cat_id + "Data to be Updated")
+            item = session.query(Items).filter_by(id=item.id).one()
+            item.name = name
+            item.description = desc
+            item.cat_id = cat_id
+            item.user_id = current_user.id
+            session.add(item)
+            failed = False
+            try:
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                session.flush()
+                failed = True
 
-        print(name + ' ' + desc + ' ' + cat_id + "Data to be Updated")
-        item = session.query(Items).filter_by(id=item.id).one()
-        item.name = name
-        item.description = desc
-        item.cat_id = cat_id
-        item.user_id = current_user.id
-        session.add(item)
-        failed = False
-        try:
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            session.flush()
-            failed = True
+            if not failed:
+                flash(f'Updated Successfully', 'success')
+            else:
+                flash(f'Not Updated Successfully', 'danger')
 
-        if not failed:
-            flash(f'Updated Successfully', 'success')
+            return redirect(url_for('homeMain'))
         else:
-            flash(f'Not Updated Successfully', 'danger')
-
-        return redirect(url_for('homeMain'))
-    return render_template('edit_item.html', item=item, cat=cat, categories=categories)
+            flash(f'User is not Authenticated to Update this Item', 'danger')
+    return render_template('edit_item.html',
+                           item=item, cat=cat, categories=categories)
 
 
 @app.route('/addItem', methods=['GET', 'POST'])
@@ -340,7 +355,16 @@ def addItem():
                      description=desc,
                      user_id=current_user.id, cat_id=cat_id)
         session.add(item)
-        session.commit()
+        try:
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            session.flush()
+            failed = True
+            if not failed:
+                flash(f'Added Successfully', 'success')
+            else:
+                flash(f'Not Added Successfully', 'danger')
 
         return redirect(url_for('homeMain'))
 
@@ -358,8 +382,9 @@ def catalog_item_json(category_id, item_id):
             return jsonify(item=item.serialize)
         else:
             return jsonify(
-                error='item {} does not belong to category {}.'
-                    .format(item_id, category_id))
+                error='item {} does not belong to category {}.'.format
+                (item_id,
+                 category_id))
     else:
         return jsonify(error='The item or the category does not exist.')
 
@@ -399,7 +424,8 @@ def add_category():
 
 
 def exists_category(category_id):
-    category = session.query(Categories).filter_by(category_id=category_id).first()
+    category = session.query(Categories). \
+        filter_by(category_id=category_id).first()
     if category is not None:
         return True
     else:

@@ -15,7 +15,8 @@ class RegistrationForm(FlaskForm):
     def validate_email(self, email):
         user = session.query(User).filter_by(email=email.data).first()
         if user:
-            raise ValidationError('The Email is Already Registered. Please Login with your Email.')
+            raise ValidationError('The Email is Already Registered.'
+                                  ' Please Login with your Email.')
 
 
 class LoginForm(FlaskForm):
